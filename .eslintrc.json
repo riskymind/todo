@@ -1,0 +1,30 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends":  ["airbnb", "prettier"],
+    "plugins": ["prettier"],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-alert": "off",
+        "no-console": "off",
+        "prettier/prettier": [
+          "error",
+          {
+            "singleQuote": true,
+            "semi": false,
+            "printWidth": 80,
+            "tabWidth": 2,
+            "endOfLine": "auto"
+          }
+        ]
+    },
+
+    "editor.codeActionsOnSave": {"source.fixAll.eslint": true},
+
+    "eslint.validate": ["javascript"]
+}

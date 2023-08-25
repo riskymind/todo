@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <script
+    src="https://kit.fontawesome.com/4c536a6bd5.js"
+    crossorigin="anonymous"
+  ></script>
+    <script src="./main.js" defer></script>
+</head>
+<body>
+    
+    <header>
+        <div class="logo">
+            <h1>Todo List</h1>
+
+            <button class="button_open_nav" id="button_open_nav">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <nav class="nav">
+            <!-- Default project -->
+            <div class="default_projects_list">
+                <button class="button_default_project" id="button_inbox_projects">
+                    <i class="fas fa-inbox"></i>
+                    Inbox
+                </button>
+                <button class="button_default_project" id="button_today_projects">
+                    <i class="fas fa-calendar-day"></i>
+                    Today
+                </button>
+                <button class="button_default_project" id="button_week_projects">
+                    <i class="fas fa-calendar-week"></i>
+                    This week
+                </button>
+            </div>
+
+            <!-- User project -->
+            <h2 class="project_title">Projects</h2>
+
+            <div class="projects_list" id="projects_list"></div>
+
+            <button class="button_add_project" id="button_add_project">
+                <i class="fas fa-plus"></i>
+                Add Project
+            </button>
+
+            <div class="add_project_popup" id="add_project_popup">
+                <input type="text" class="input_add_project_popup" id="input_add_project_popup"/>
+                <div class="add_project_popup_buttons">
+                    <button class="button_add_project_popup" id="button_add_project_popup">Add</button>
+                    <button class="button_cancel_project_popup" id="button_cancel_project_popup">Cancel</button>
+                </div>
+            </div>
+            
+        </nav>
+
+        <!-- Tasks -->
+      <div class="project_preview" id="project_preview"></div>
+    </main>
+
+</body>
+</html>
