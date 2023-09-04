@@ -30,7 +30,7 @@ export default class Project {
 
   contains(name) {
     return this.tasks.some((task) => {
-      task.getName() === name;
+      return task.getName() === name;
     });
   }
 
@@ -45,14 +45,14 @@ export default class Project {
 
   getTasksToday() {
     return this.tasks.filter((task) => {
-      const taskDate = new Date(task.getFormattedDate());
+      const taskDate = new Date(task.getDateFormatted());
       return isToday(toDate(taskDate));
     });
   }
 
   getTasksThisWeek() {
     return this.tasks.filter((task) => {
-      const taskDate = new Date(task.getFormattedDate());
+      const taskDate = new Date(task.getDateFormatted());
       return isThisWeek(subDays(toDate(taskDate), 1));
     });
   }
