@@ -1,4 +1,7 @@
 import Project from "./Project";
+import Storage from "./Storage";
+import Task from "./Task";
+import { format } from "date-fns";
 
 export default class UI {
   static loadHomepage() {
@@ -9,6 +12,17 @@ export default class UI {
   }
 
   static loadProjects() {
+    Storage.getTodoList()
+      .getProjects()
+      .forEach((project) => {
+        if (
+          project.name !== "Inbox" &&
+          project.name !== "Today" &&
+          project.name !== "This week"
+        ) {
+          UI.createProject(project.name);
+        }
+      });
     UI.initAddProjectButtons();
   }
 
@@ -54,10 +68,13 @@ export default class UI {
       alert("Project name cannot be empty");
       return;
     }
+    if (Storage.getTodoList().contains(projectName)) {
+      addProjectPopupInput.value = "";
+      alert("Project names must be different");
+      return;
+    }
 
-    // Create and Store new project
-    const project = new Project(projectName);
-
+    Storage.addProject(new Project(projectName));
     UI.createProject(projectName);
     UI.closeAddProjectPopup();
   }
@@ -126,10 +143,12 @@ export default class UI {
   }
 
   static openTodayTasks() {
+    Storage.updateTodayProject();
     UI.openProject("Today", this);
   }
 
   static openWeekTasks() {
+    Storage.updateWeekProject();
     UI.openProject("This week", this);
   }
 
@@ -192,7 +211,7 @@ export default class UI {
 
   static deleteProject(name, button) {
     if (button.classList.contains("active")) UI.clearProjectPreview();
-
+    Storage.deleteProject(name);
     UI.clearProjects();
     UI.loadProjects();
   }
@@ -215,7 +234,10 @@ export default class UI {
   // TASK
   static loadTasks(projectName) {
     // Get tasks from storage
-    console.log("loaded tasks");
+    Storage.getTodoList()
+      .getProject(projectName)
+      .getTasks()
+      .forEach((task) => UI.createTask(task.name, task.dueDate));
 
     if (projectName !== "Today" && projectName !== "This week") {
       UI.initAddTaskButtons();
@@ -254,6 +276,14 @@ export default class UI {
       alert("Task name cannot be empty");
       return;
     }
+
+    if (Storage.getTodoList().getProject(projectName).contains(taskName)) {
+      alert("Task names must be different");
+      addTaskPopupInput.value = "";
+      return;
+    }
+
+    Storage.addTask(projectName, new Task(taskName));
 
     UI.createTask(taskName, "no Date");
     UI.closeAddTaskPopup();
@@ -344,6 +374,24 @@ export default class UI {
       alert("Task name can't be empty");
       return;
     }
+    if (Storage.getTodoList().getProject(projectName).contains(newTaskName)) {
+      this.value = "";
+      alert("Task names must be different");
+      return;
+    }
+
+    if (projectName === "Today" || projectName === "This week") {
+      const mainProjectName = taskName.split("(")[1].split(")")[0];
+      const mainTaskName = taskName.split(" ")[0];
+      Storage.renameTask(
+        projectName,
+        taskName,
+        `${newTaskName} (${mainProjectName})`
+      );
+      Storage.renameTask(mainProjectName, mainTaskName, newTaskName);
+    } else {
+      Storage.renameTask(projectName, taskName, newTaskName);
+    }
 
     UI.clearTasks();
     UI.loadTasks(projectName);
@@ -356,6 +404,20 @@ export default class UI {
     const taskName = taskButton.children[0].children[1].textContent;
     const newDueDate = format(new Date(this.value), "dd/MM/yyyy");
 
+    if (projectName === "Today" || projectName === "This week") {
+      const mainProjectName = taskName.split("(")[1].split(")")[0];
+      const mainTaskName = taskName.split(" (")[0];
+      Storage.setTaskDate(projectName, taskName, newDueDate);
+      Storage.setTaskDate(mainProjectName, mainTaskName, newDueDate);
+      if (projectName === "Today") {
+        Storage.updateTodayProject();
+      } else {
+        Storage.updateWeekProject();
+      }
+    } else {
+      Storage.setTaskDate(projectName, taskName, newDueDate);
+    }
+
     UI.clearTasks();
     UI.loadTasks(projectName);
     UI.closeSetDateInput(taskButton);
@@ -365,6 +427,18 @@ export default class UI {
     const projectName = document.getElementById("project_name").textContent;
     const taskName = taskButton.children[0].children[1].textContent;
 
+    if (projectName === "Today" || projectName === "This week") {
+      const parentProjectName = taskName.split("(")[1].split(")")[0];
+      Storage.deleteTask(parentProjectName, taskName.split(" ")[0]);
+      if (projectName === "Today") {
+        Storage.updateTodayProject();
+      } else {
+        Storage.updateWeekProject();
+      }
+    } else {
+      Storage.deleteTask(projectName, taskName);
+    }
+
     UI.clearTasks();
     UI.loadTasks(projectName);
   }
@@ -372,7 +446,11 @@ export default class UI {
   static deleteTask(taskButton) {
     const projectName = document.getElementById("project_name").textContent;
     const taskName = taskButton.children[0].children[1].textContent;
-
+    if (projectName === "Today" || projectName === "This week") {
+      const mainProjectName = taskName.split("(")[1].split(")")[0];
+      Storage.deleteTask(mainProjectName, taskName);
+    }
+    Storage.deleteTask(projectName, taskName);
     UI.clearTasks();
     UI.loadTasks(projectName);
   }

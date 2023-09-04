@@ -24,7 +24,7 @@ export default class Project {
 
   getTask(name) {
     return this.tasks.find((task) => {
-      task.getName() === name;
+      return task.getName() === name;
     });
   }
 
